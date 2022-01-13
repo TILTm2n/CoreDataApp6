@@ -33,9 +33,9 @@ class ViewController: UIViewController {
     
     @IBAction func addButtonPressed(_ sender: Any) {
         let date = Date()
-        print(dateFormatter.string(from: date))
         array.append(date)
         print(array.count)
+        print(array[array.count - 1])
         tableView.reloadData()
     }
     
@@ -45,21 +45,22 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return "My happy meal time"
     }
-    
+
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return array.count
+        return 5
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell")
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath)
         
-        let date = array[indexPath.row]
-        cell?.textLabel?.text = dateFormatter.string(from: date)
-        return cell!
+        //let date = array[indexPath.row]
+        cell.textLabel?.text = "dateFormatter.string(from: date)"
+        cell.detailTextLabel?.text = "sdadafdsfa"
+        return cell
     }
 }
 

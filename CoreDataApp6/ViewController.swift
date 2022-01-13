@@ -23,11 +23,11 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "MyCell")
         tableView.delegate = self
         tableView.delegate = self
         imageMeal.image = UIImage(named: "meal")
         
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "MyCell")
     }
     
     

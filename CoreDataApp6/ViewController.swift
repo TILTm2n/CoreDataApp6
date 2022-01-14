@@ -6,13 +6,18 @@
 //
 
 import UIKit
+import CoreData
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
+    let coreDataStack = CoreDataStack()
+    lazy var context = coreDataStack.persistentContainer.viewContext
+    var array = [Date]()
+    var person: Person!
+    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var imageMeal: UIImageView!
     
-    var array = [Date]()
     
     lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -23,25 +28,30 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        imageMeal.image = UIImage(named: "meal")
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "MyCell")
         tableView.delegate = self
-        tableView.delegate = self
-        imageMeal.image = UIImage(named: "meal")
+        tableView.dataSource = self
+        
+        let personName = "Max"
+        let fetchRequest: NSFetchRequest<Person> = Person.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "name = %@", argumentArray: [personName])
+        
+        do {
+            let results = try context.fetch(fetchRequest)
+            if results.isEmpty{
+                person = Person(context: context)
+                person.name = personName
+                try context.save()
+            }else{
+                person = results.first
+            }
+        } catch let error as NSError{
+            print(error.userInfo)
+        }
         
     }
     
-    
-    @IBAction func addButtonPressed(_ sender: Any) {
-        let date = Date()
-        array.append(date)
-        print(array.count)
-        print(array[array.count - 1])
-        tableView.reloadData()
-    }
-    
-}
-
-extension ViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return "My happy meal time"
     }
@@ -51,16 +61,27 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        guard let meals = person.meals else {return 1}
+        return meals.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath)
         
-        //let date = array[indexPath.row]
-        cell.textLabel?.text = "dateFormatter.string(from: date)"
-        cell.detailTextLabel?.text = "sdadafdsfa"
+        guard let meal = person.meals?[indexPath.row] as? Meal, let mealDate = meal.date else
+        {
+            return cell
+        }
+        
+        cell.textLabel?.text = dateFormatter.string(from: mealDate)
         return cell
     }
+    
+    
+    @IBAction func addButtonPressed(_ sender: Any) {
+        
+    }
+    
 }
+
 

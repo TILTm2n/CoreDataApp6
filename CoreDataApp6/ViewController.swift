@@ -79,7 +79,22 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     
     @IBAction func addButtonPressed(_ sender: Any) {
+        let meal = Meal(context: context)
+        meal.date = Date()
         
+        //cоздаем копируемую копию, так как то что приходит изменять нельзя! почему хз?!!!
+        let meals = person.meals?.mutableCopy() as? NSMutableOrderedSet
+        meals?.add(meal)
+        //менять приходящий сет нельзя но заменить его можно
+        person.meals = meals
+        
+        do {
+            try context.save()
+        } catch let error as NSError{
+            print("Error: \(error), userInfo: \(error.userInfo)")
+        }
+        
+        tableView.reloadData()
     }
     
 }
